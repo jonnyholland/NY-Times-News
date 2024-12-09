@@ -1,0 +1,15 @@
+{
+  "originHash" : "dd2fa5987dbb6cb351457f7235ba8386e66922f2bf622dca62ea28be8b22a804",
+  "pins" : [
+    {
+      "identity" : "composablearchitecturepattern",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/jonnyholland/ComposableArchitecturePattern.git",
+      "state" : {
+        "revision" : "5688f951423f5df33a0cf7e3693bd1cce7019b46",
+        "version" : "1.2.0"
+      }
+    }
+  ],
+  "version" : 3
+}
