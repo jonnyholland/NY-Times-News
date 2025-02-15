@@ -29,7 +29,7 @@ struct ContentView<Provider: NYTimesProvider>: View {
 				}
 				
 				Tab(TabSelection.search.displayText, systemImage: "magnifyingglass", value: .search) {
-					ArticleSearch()
+					ArticleSearch(provider: self.provider)
 				}
 			}
 			.fontDesign(.serif)

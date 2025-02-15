@@ -10,7 +10,7 @@ import SwiftUI
 struct ArticleSearch<Provider: ArticleSearchProvider>: View {
 	private var provider: Provider
 	
-	init(provider: Provider = NYTimesDataProvider()) {
+	init(provider: Provider) {
 		self.provider = provider
 	}
 	
