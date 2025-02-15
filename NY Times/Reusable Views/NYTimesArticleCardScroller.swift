@@ -53,7 +53,6 @@ struct NYTimesArticleCardScroller<T: Hashable, ArticleView: View>: View {
 			
 			if let currentArticle {
 				self.articleView(currentArticle)
-					.frame(width: 500, height: 500)
 			}
 			
 			Spacer()
