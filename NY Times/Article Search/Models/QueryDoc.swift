@@ -43,7 +43,7 @@ extension QueryDoc {
 	struct Person: Decodable, Hashable {
 		let firstname: String
 		let middlename: String?
-		let lastname: String
+		let lastname: String?
 		let qualifier: String?
 		let title: String?
 		let role: String?
