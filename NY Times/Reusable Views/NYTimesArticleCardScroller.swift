@@ -41,7 +41,7 @@ struct NYTimesArticleCardScroller<T: Hashable, ArticleView: View>: View {
 				}
 				
 				if let previousIndex = self.articles.index(index, offsetBy: -1, limitedBy: self.articles.startIndex) {
-					self.currentArticle = self.articles[previousIndex]
+					self.currentArticle = self.articles[safe: previousIndex]
 				}
 			} label: {
 				Image(systemName: "arrow.left")
@@ -65,7 +65,7 @@ struct NYTimesArticleCardScroller<T: Hashable, ArticleView: View>: View {
 				}
 				
 				if let nextIndex = self.articles.index(index, offsetBy: 1, limitedBy: self.articles.endIndex) {
-					self.currentArticle = self.articles[nextIndex]
+					self.currentArticle = self.articles[safe: nextIndex]
 				}
 			} label: {
 				Image(systemName: "arrow.right")
