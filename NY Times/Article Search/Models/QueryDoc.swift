@@ -34,7 +34,7 @@ extension QueryDoc {
 	}
 	
 	struct Byline: Decodable, Hashable {
-		let original: String
+		let original: String?
 		let person: [Person]?
 	}
 }

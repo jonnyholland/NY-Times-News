@@ -61,8 +61,8 @@ struct QueryDocRow: View {
 				Text(self.doc.abstract)
 					.lineLimit(5)
 				
-				if let byline = self.doc.byline {
-					Text(byline.original)
+				if let byline = self.doc.byline, let original = byline.original {
+					Text(original)
 						.font(.footnote)
 						.foregroundStyle(.secondary)
 				}
