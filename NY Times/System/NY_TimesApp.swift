@@ -10,35 +10,17 @@ import SwiftData
 
 @main
 struct NY_TimesApp: App {
-	var contentViewModel: ContentViewModel = .init()
+	var topStoriesProvider = NYTimesDataProvider()
+	@State private var refreshID = UUID()
 	
     var body: some Scene {
 		Window("NY Times News", id: "ny-times-news-content") {
-			ContentView(viewModel: self.contentViewModel)
-				.alert(
-					"Unable to get news",
-					isPresented: Binding(
-						get: { self.contentViewModel.showError },
-						set: { self.contentViewModel.showError = $0 }),
-					presenting: self.contentViewModel.fetchError,
-					actions: { error in
-						Button("OK", role: .cancel) {}
-					},
-					message: { error in
-						Text(error.localizedDescription)
-					}
-				)
+			ContentView(provider: self.topStoriesProvider, refreshID: self.$refreshID)
         }
 		.commands {
 			CommandGroup(after: .appInfo) {
 				Button("Refresh") {
-					Task {
-						do {
-							try await self.contentViewModel.refresh()
-						} catch {
-							print("Unable to refresh: \(error)")
-						}
-					}
+					self.refreshID = UUID()
 				}
 				.keyboardShortcut("r", modifiers: .command)
 			}

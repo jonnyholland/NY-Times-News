@@ -8,21 +8,24 @@
 import SwiftUI
 import SwiftData
 
-struct ContentView: View {
-	@Bindable var viewModel: ContentViewModel
+struct ContentView<Provider: NYTimesProvider>: View {
+	var provider: Provider
 	
 	@SceneStorage("CurrentTabSelection") var tabSelection: TabSelection = .topStories
-	@State private var refreshID: UUID? = .init()
-	
 	@SceneStorage("TopStoriesViewStyle") var viewStyle: ArticleViewType = .card
 	
+	@State private var topStories = [TopStoriesArticle]()
 	@State private var selectedArticle: TopStoriesArticle?
+	@Binding var refreshID: UUID
+	@State private var isFetching = false
+	@State private var fetchError: Error?
+	@State private var showErrorAlert = false
 
     var body: some View {
 		NavigationStack {
 			TabView(selection: self.$tabSelection) {
 				Tab(TabSelection.topStories.displayText, systemImage: "star.circle", value: .topStories) {
-					TopStoriesView(articles: self.viewModel.topStories, selectedArticle: self.$selectedArticle)
+					TopStoriesView(articles: self.topStories, selectedArticle: self.$selectedArticle)
 				}
 				
 				Tab(TabSelection.search.displayText, systemImage: "magnifyingglass", value: .search) {
@@ -34,18 +37,46 @@ struct ContentView: View {
 				TopStoryArticleDetail(article: article)
 			}
 			.toolbar {
-				if self.viewModel.isRefreshing {
+				if self.isFetching {
 					ProgressView()
 						.controlSize(.small)
 				}
+				Button {
+					self.refreshID = UUID()
+				} label: {
+					Image(systemName: "arrow.counterclockwise")
+				}
+				.accessibilityLabel(Text("Refresh"))
+				.accessibilityHint(Text("Refresh the news"))
+			}
+			.refreshable {
+				self.refreshID = UUID()
 			}
         }
-		.onChange(of: self.tabSelection, initial: true) { _, newValue in
-			self.viewModel.tabSelection = newValue
+		.task(id: self.refreshID) {
+			do {
+				defer {
+					self.isFetching = false
+				}
+				self.isFetching = true
+				
+				self.topStories = try await self.provider.getTopStories(for: .home)
+			} catch {
+				self.fetchError = error
+				self.showErrorAlert = true
+			}
 		}
-//		.task(id: self.refreshID) {
-//			try? await self.viewModel.refresh()
-//		}
+		.alert(
+			"Unable to get news",
+			isPresented: self.$showErrorAlert,
+			presenting: self.fetchError,
+			actions: { error in
+				Button("OK", role: .cancel) {}
+			},
+			message: { error in
+				Text(error.localizedDescription)
+			}
+		)
     }
 }
 
@@ -66,5 +97,5 @@ enum TabSelection: String, Hashable, CaseIterable {
 }
 
 #Preview {
-	ContentView(viewModel: ContentViewModel())
+	ContentView(provider: NYTimesDataProvider(), refreshID: .constant(.init()))
 }
