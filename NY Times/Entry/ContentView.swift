@@ -34,7 +34,7 @@ struct ContentView<Provider: NYTimesProvider>: View {
 			}
 			.fontDesign(.serif)
 			.navigationDestination(item: self.$selectedArticle) { article in
-				TopStoryArticleDetail(article: article)
+				TopNewsArticleScroller(topStories: self.topStories, selectedArticle: article)
 			}
 			.toolbar {
 				if self.isFetching {
