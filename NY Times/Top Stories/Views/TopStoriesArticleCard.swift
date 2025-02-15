@@ -76,6 +76,8 @@ struct TopStoriesArticleCard: View {
 				self.openURL(url)
 			}
 			.help("Open the article in NY Times website.")
+			.accessibilityLabel(Text("Open the article in NY Times website."))
+			.accessibilityHint(Text("Opens your web browser and navigates to the article URL."))
 		}
 	}
 }
