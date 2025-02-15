@@ -12,6 +12,15 @@ final class ContentViewModel {
 	var topStories: [TopStoriesArticle] = []
 	var provider: NYTimesProvider
 	var tabSelection: TabSelection?
+	var isRefreshing = false
+	var fetchError: Error? {
+		didSet {
+			if self.fetchError != nil {
+				self.showError = true
+			}
+		}
+	}
+	var showError = false
 	
 	init(provider: NYTimesProvider = NYTimesDataProvider()) {
 		self.provider = provider
@@ -21,10 +30,15 @@ final class ContentViewModel {
 	
 	private func _refresh() {
 		Task {
+			defer {
+				self.isRefreshing = false
+			}
+			self.isRefreshing = true
+			
 			do {
 				try await self.refresh()
 			} catch {
-				print("***** error refreshing: \(error)")
+				self.fetchError = error
 			}
 		}
 	}

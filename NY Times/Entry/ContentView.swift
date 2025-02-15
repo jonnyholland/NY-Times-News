@@ -33,6 +33,12 @@ struct ContentView: View {
 			.navigationDestination(item: self.$selectedArticle) { article in
 				TopStoryArticleDetail(article: article)
 			}
+			.toolbar {
+				if self.viewModel.isRefreshing {
+					ProgressView()
+						.controlSize(.small)
+				}
+			}
         }
 		.onChange(of: self.tabSelection, initial: true) { _, newValue in
 			self.viewModel.tabSelection = newValue

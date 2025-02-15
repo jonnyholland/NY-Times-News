@@ -19,6 +19,8 @@ struct ArticleSearch<Provider: ArticleSearchProvider>: View {
 	@State private var selection: QueryDoc?
 	
 	@State private var isSearching = false
+	@State private var error: Error?
+	@State private var showError = false
 	
 	var body: some View {
 		VStack {
@@ -44,21 +46,39 @@ struct ArticleSearch<Provider: ArticleSearchProvider>: View {
 			}
 		}
 		.safeAreaPadding()
-		.opacity(self.isSearching ? 0.3 : 1)
-		.overlay {
+		.toolbar {
 			if self.isSearching {
 				ProgressView()
+					.controlSize(.small)
 			}
 		}
-		.toolbar {}
 		.task {
 			if !self.searchText.isEmpty {
+				defer {
+					self.isSearching = false
+				}
+				self.isSearching = true
 				do {
 					self.articles = try await self.provider.searchArticles(query: self.searchText)
 				} catch {
-					print("Unable to search articles: \(error).")
+					self.error = error
+					self.showError = true
 				}
 			}
 		}
+		.alert(
+			"Error encountered searching for article",
+			isPresented: self.$showError,
+			presenting: self.error,
+			actions: { error in
+				Button("OK", role: .cancel) {}
+				Button("Try again") {
+					self.taskID = UUID()
+				}
+			},
+			message: { error in
+				Text(error.localizedDescription)
+			}
+		)
 	}
 }
