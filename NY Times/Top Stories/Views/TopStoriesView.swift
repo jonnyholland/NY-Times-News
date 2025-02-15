@@ -46,6 +46,9 @@ struct TopStoriesView: View {
 				case .card: self.card
 				case .list: self.list
 			}
+		} else {
+			Text("No stories available…")
+				.font(.largeTitle)
 		}
 	}
 	
