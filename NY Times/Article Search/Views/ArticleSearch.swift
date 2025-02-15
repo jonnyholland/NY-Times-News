@@ -18,6 +18,7 @@ struct ArticleSearch<Provider: ArticleSearchProvider>: View {
 	@State private var articles = [QueryDoc]()
 	@State private var selection: QueryDoc?
 	
+	@State private var taskID = UUID()
 	@State private var isSearching = false
 	@State private var error: Error?
 	@State private var showError = false
@@ -27,16 +28,7 @@ struct ArticleSearch<Provider: ArticleSearchProvider>: View {
 			TextField("Search for any article…", text: self.$searchText)
 				.textFieldStyle(.roundedBorder)
 				.onSubmit {
-					guard !self.searchText.isEmpty else {
-						return
-					}
-					Task {
-						do {
-							self.articles = try await self.provider.searchArticles(query: self.searchText)
-						} catch {
-							print("Unable to search articles: \(error).")
-						}
-					}
+					self.taskID = UUID()
 				}
 			
 			Spacer()
@@ -52,7 +44,7 @@ struct ArticleSearch<Provider: ArticleSearchProvider>: View {
 					.controlSize(.small)
 			}
 		}
-		.task {
+		.task(id: self.taskID) {
 			if !self.searchText.isEmpty {
 				defer {
 					self.isSearching = false
